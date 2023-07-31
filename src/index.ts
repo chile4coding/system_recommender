@@ -20,9 +20,8 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   res.status(statusCode).json({ error: message });
 });
 async function mongooseConnect() {
-  await connect(
-    `mongodb+srv://recommender-system:recommender12345@cluster0.jv9eo4u.mongodb.net/HospiatlRecommenderSystem?retryWrites=true&w=majority`
-  );
+  await connect(process.env.URL)
+  
 }
 
 app.listen(process.env.PORT, () => {
