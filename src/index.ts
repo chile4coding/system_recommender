@@ -3,6 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { connect } from "mongoose";
 import dotenv from "dotenv";
+import v1Api from "./routes/route";
 import { error } from "console";
 import { Request, Response, NextFunction } from "express";
 
@@ -12,6 +13,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors({ credentials: true, origin: "*" }));
+
+app.use(v1Api)
 
 // error middleware for handling error
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {

@@ -12,7 +12,7 @@ export class Utils {
     const hashPassword = await bcrypt.hash(password, await this.salt());
     return hashPassword;
   };
-  JWTToken = (email: string, userId: string, role: string) => {
+  JWTToken = (email: string, userId: string) => {
     const token = jwt.sign(
       {
         email: email,

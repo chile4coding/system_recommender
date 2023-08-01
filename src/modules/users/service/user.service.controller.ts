@@ -16,7 +16,7 @@ export class UserServices implements UserServiceProps {
     }
 
     try {
-      const { username, email, password, phone } = req.body;
+      const { username, email, password, phone, fullName } = req.body;
       const findEmail = await User.findOne({ email });
       if (findEmail) {
         this.utils.handleError(
@@ -29,6 +29,7 @@ export class UserServices implements UserServiceProps {
         name: username,
         phone: phone,
         password: hashPassword,
+        fullName: fullName,
       });
       const saveUser = await user.save();
 
@@ -37,7 +38,42 @@ export class UserServices implements UserServiceProps {
         name: saveUser.name,
         phone: saveUser.phone,
         email: saveUser.email,
+        fullName: saveUser.fullName,
         id: saveUser._id,
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  public loginUser = expressAsyncHandler(async (req, res, next) => {
+    const error = validationResult(req.body);
+    if (!error.isEmpty()) {
+      this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
+    }
+    try {
+      const { email, password } = req.body;
+      const findEmail = await User.findOne({ email });
+      if (!findEmail) {
+        this.utils.handleError(
+          "User not found!",
+          StatusCodes.BAD_REQUEST
+        );
+      }
+       await this.utils.comparePassword(
+        password,
+        findEmail?.password as string
+      );
+   
+      const id = findEmail?.id as string;
+      const token = this.utils.JWTToken(findEmail?.email as string, id);
+
+      res.status(StatusCodes.OK).json({
+        mesage: "Login SUccessful",
+        token:token,
+        userId: id,
+        username:findEmail?.name
+        
       });
     } catch (error) {
       next(error);
