@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import { connect } from "mongoose";
 import dotenv from "dotenv";
 import v1Api from "./routes/route";
+
 import { error } from "console";
 import { Request, Response, NextFunction } from "express";
 
@@ -18,7 +19,10 @@ app.use(v1Api)
 
 // error middleware for handling error
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  const { message, statusCode } = error;
+
+
+  const statusCode = error.statusCode || 500;
+  const message  = error.message || "INVALID REQUEST"
 
   res.status(statusCode).json({ error: message });
 });

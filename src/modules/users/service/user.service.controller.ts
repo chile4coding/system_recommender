@@ -30,6 +30,7 @@ export class UserServices implements UserServiceProps {
         phone: phone,
         password: hashPassword,
         fullName: fullName,
+        email:email
       });
       const saveUser = await user.save();
 
@@ -72,7 +73,8 @@ export class UserServices implements UserServiceProps {
         mesage: "Login SUccessful",
         token:token,
         userId: id,
-        username:findEmail?.name
+        username:findEmail?.name,
+        fullName: findEmail?.fullName,
         
       });
     } catch (error) {

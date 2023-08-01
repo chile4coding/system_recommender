@@ -15,7 +15,7 @@ export class UserRoutes implements UserRouteProps{
 
     private initRoute(){
 
-this.route.post('/register',check('email').isEmail().isEmpty(), check("password").isEmpty(), check("username").isEmpty(), check("fullName").isEmpty(), this.userService.createuser)
+this.route.post('/register',check('email').isEmpty(), check("password").isEmpty(), check("username").isEmpty(), check("fullName").isEmpty(), this.userService.createuser)
 this.route.post('/login',check('email').isEmail().isEmpty(), check("password").isEmpty(),this.userService.loginUser)
     }
     public getRoute(){
