@@ -28,7 +28,7 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 });
 async function mongooseConnect() {
   await connect(
-    `mongodb+srv://recommender-system:recommender12345@cluster0.jv9eo4u.mongodb.net/HospiatlRecommenderSystem?retryWrites=true&w=majority`
+    `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@cluster0.jv9eo4u.mongodb.net/HospiatlRecommenderSystem?retryWrites=true&w=majority`
   );
 }
 

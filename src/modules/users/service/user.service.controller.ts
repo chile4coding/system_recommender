@@ -75,6 +75,7 @@ export class UserServices implements UserServiceProps {
         userId: id,
         username:findEmail?.name,
         fullName: findEmail?.fullName,
+        email:findEmail?.email
         
       });
     } catch (error) {
