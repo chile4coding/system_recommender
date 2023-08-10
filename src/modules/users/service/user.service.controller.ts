@@ -3,6 +3,7 @@ import { Utils } from "../../../helpers/utils";
 import { validationResult } from "express-validator";
 import { StatusCodes } from "http-status-codes";
 import { User } from "../models/user.model";
+
 interface UserServiceProps {
   utils: Utils;
 }
