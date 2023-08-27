@@ -15,7 +15,7 @@ export class UserServices implements UserServiceProps {
     if (!error.isEmpty()) {
       this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
     }
-    const { firstname, lastname, email, password, phone } = req.body
+    const { name, email, password } = req.body
     
     
     try {
@@ -29,20 +29,16 @@ export class UserServices implements UserServiceProps {
       }
       const hashPassword = await this.utils.hashPassword(password);
       const user = await User.create({
-        userName: firstname.charAt(0) + " " + lastname.charAt(0),
-        firstName: firstname,
-        lastName: lastname,
-        phone: phone,
+      
+    name: name,
         password: hashPassword,
         email: email,
       });
       const saveUser = await user.save();
 
       res.status(StatusCodes.OK).json({
-        message: "user created successfully",
-        firstName: saveUser.firstName,
-        lastName: saveUser.lastName,
-        username: saveUser.userName,
+        message: "Account created successfully",
+        name: saveUser.name,
         email: saveUser.email,
 
         id: saveUser._id,
@@ -69,12 +65,10 @@ export class UserServices implements UserServiceProps {
       const token = this.utils.JWTToken(findEmail?.email as string, id);
 
       res.status(StatusCodes.OK).json({
-        mesage: "Login SUccessful",
+        mesage: "Login Successful",
         token: token,
         userId: id,
-        username: findEmail?.userName,
-        firstName: findEmail?.firstName,
-        lastName: findEmail?.lastName,
+        name: findEmail?.name,
         email: findEmail?.email,
       });
     } catch (error) {

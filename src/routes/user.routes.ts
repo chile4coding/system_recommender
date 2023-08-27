@@ -18,8 +18,7 @@ export class UserRoutes implements UserRouteProps {
       "/register",
       check("email").isEmpty().isEmail(),
       check("password").isEmpty().isLength({ min: 6 }).isAlphanumeric(),
-      check("firstnname").isEmpty(),
-      check("lastname").isEmpty(),
+      check("name").isEmpty(),
       this.userService.createuser
     );
     this.route.post(
