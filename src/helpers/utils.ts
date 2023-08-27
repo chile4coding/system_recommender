@@ -2,6 +2,8 @@ import { errorHandler } from "./error-handler";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import StatusCodes from "http-status-codes";
+import {v2 as cloudinary} from "cloudinary"
+
 
 export class Utils {
   handleError(message: string, statusCode: number) {
@@ -33,4 +35,34 @@ export class Utils {
       console.error(error);
     }
   };
+
+  uploaduserpicture = async function name(file: string) {
+
+    const result = await cloudinary.uploader.upload(file , {
+      folder: process.env.CLOUDINARY_UPLOAD_PATH,
+    });
+  
+    return result;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  }
+
 }

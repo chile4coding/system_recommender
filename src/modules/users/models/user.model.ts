@@ -2,20 +2,28 @@ import { Schema, model } from "mongoose";
 
 // 1. Create an interface representing a document in MongoDB.
 interface IUser {
-  name: string;
+  displayName: string;
   email: string;
   password: string;
   phone: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  location: { type: string; coordinate: number[] };
+  recommendation: string[];
 }
 
 // user schema
 const userSchema = new Schema<IUser>({
-  name: { type: String, required: true },
+  displayName: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
   phone: String,
-  fullName: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  avatar: String,
+  location: { type: { type: String, coordinate: [Number] } },
+  recommendation: [{ type: String }],
 });
 
 // 3. Create a Model.
