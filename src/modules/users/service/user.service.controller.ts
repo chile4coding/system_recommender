@@ -15,11 +15,8 @@ export class UserServices implements UserServiceProps {
     if (!error.isEmpty()) {
       this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
     }
-    const { name, email, password } = req.body
-    
-    
     try {
-      
+      const { username, email, password, phone, fullName } = req.body;
       const findEmail = await User.findOne({ email });
       if (findEmail) {
         this.utils.handleError(
@@ -29,18 +26,20 @@ export class UserServices implements UserServiceProps {
       }
       const hashPassword = await this.utils.hashPassword(password);
       const user = await User.create({
-      
-    name: name,
+        name: username,
+        phone: phone,
         password: hashPassword,
-        email: email,
+        fullName: fullName,
+        email:email
       });
       const saveUser = await user.save();
 
       res.status(StatusCodes.OK).json({
-        message: "Account created successfully",
+        message: "user created successfully",
         name: saveUser.name,
+        phone: saveUser.phone,
         email: saveUser.email,
-
+        fullName: saveUser.fullName,
         id: saveUser._id,
       });
     } catch (error) {
@@ -57,19 +56,27 @@ export class UserServices implements UserServiceProps {
       const { email, password } = req.body;
       const findEmail = await User.findOne({ email });
       if (!findEmail) {
-        this.utils.handleError("User not found!", StatusCodes.BAD_REQUEST);
+        this.utils.handleError(
+          "User not found!",
+          StatusCodes.BAD_REQUEST
+        );
       }
-      await this.utils.comparePassword(password, findEmail?.password as string);
-
+       await this.utils.comparePassword(
+        password,
+        findEmail?.password as string
+      );
+   
       const id = findEmail?.id as string;
       const token = this.utils.JWTToken(findEmail?.email as string, id);
 
       res.status(StatusCodes.OK).json({
-        mesage: "Login Successful",
-        token: token,
+        mesage: "Login SUccessful",
+        token:token,
         userId: id,
-        name: findEmail?.name,
-        email: findEmail?.email,
+        username:findEmail?.name,
+        fullName: findEmail?.fullName,
+        email:findEmail?.email
+        
       });
     } catch (error) {
       next(error);
