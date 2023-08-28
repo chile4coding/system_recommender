@@ -9,20 +9,20 @@ interface IUser {
   firstName: string;
   lastName: string;
   avatar: string;
-  location: { type: string; coordinate: number[] };
+  location: { type:{}, coordinates:Number[] };
   recommendation: string[];
 }
 
 // user schema
 const userSchema = new Schema<IUser>({
-  displayName: { type: String, required: true },
+  displayName: { type: String },
   email: { type: String, required: true },
   password: { type: String, required: true },
   phone: String,
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   avatar: String,
-  location: { type: { type: String, coordinate: [Number] } },
+  location: { type:{type:String, },coordinates:[Number]},
   recommendation: [{ type: String }],
 });
 

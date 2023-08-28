@@ -11,6 +11,7 @@ import {
   UploadApiResponse,
 } from "cloudinary";
 import { Request, Response, NextFunction } from "express";
+import { Hospital } from "../models/hospital.model";
 
 interface UserServiceProps {
   utils: Utils;
@@ -25,6 +26,7 @@ export class UserServices implements UserServiceProps {
       this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
     }
     try {
+       await Hospital.collection.createIndex({ location: "2dsphere" });
       const { email, password, phone, firstname, lastname } = req.body;
       const findEmail = await User.findOne({ email });
       if (findEmail) {
@@ -71,7 +73,6 @@ export class UserServices implements UserServiceProps {
 
       const id = findEmail?.id;
 
-      console.log(id);
       const token = this.utils.JWTToken(findEmail?.email as string, id);
 
       res.status(StatusCodes.OK).json({
@@ -91,12 +92,9 @@ export class UserServices implements UserServiceProps {
   public uploadProfilePicture = expressAsyncHandler(
     async (req: any, res: any, next) => {
       try {
-        const imagePath = req.file?.path.replace("\\", "/");
+        // const imagePath = req.file?.path.replace("\\", "/");
         const { authId } = req;
         const findUser = await User.findById(authId);
-
-       
-
 
         if (!findUser) {
           this.utils.handleError("Inval request", StatusCodes.BAD_REQUEST);
@@ -109,7 +107,6 @@ export class UserServices implements UserServiceProps {
           const cloudImageUpload = await this.utils.uploaduserpicture(
             req.file?.path as string
           );
-
 
           const update = { avatar: cloudImageUpload.url };
           const uploadUserPics = await User.findByIdAndUpdate(authId, update);
@@ -128,4 +125,104 @@ export class UserServices implements UserServiceProps {
       }
     }
   );
+  public addUserLocation = expressAsyncHandler(
+    async (req: any, res: any, next) => {
+      const error = validationResult(req.body);
+      if (!error.isEmpty()) {
+        this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
+      }
+
+      try {
+        const { longitude, latitude } = req.body;
+
+        const updateuserLocale = await User.findByIdAndUpdate(req.authId, {
+          location: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+        });
+        const user = await updateuserLocale?.save();
+        if (!user) {
+          this.utils.handleError("Error occurred", StatusCodes.BAD_REQUEST);
+        }
+
+        res.status(StatusCodes.OK).json({
+          message: "location set successfully",
+          location: user?.location,
+        });
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+  public updateUserProfile = expressAsyncHandler(
+    async (req: any, res, next) => {
+      const error = validationResult(req.body);
+      if (!error.isEmpty()) {
+        this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
+      }
+      try {
+        const { firstname, lastname, phone } = req.body;
+
+        const updateUser = await User.findByIdAndUpdate(req.authId, {
+          firstName: firstname,
+          lastName: lastname,
+          phone: phone,
+        });
+        const updated = await updateUser?.save();
+
+        if (!updated) {
+          this.utils.handleError("Server Error", StatusCodes.BAD_REQUEST);
+        }
+        res.status(StatusCodes.OK).json({
+          message: "profile updated successfully",
+          phone: updated?.phone,
+          firstname: updated?.firstName,
+          lastname: updated?.lastName,
+        });
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+  public recommendation = expressAsyncHandler(async (req: any, res, next) => {
+    const user = await User.findById(req.authId)
+    
+    const locale = user?.location?.coordinates;
+
+
+    let long: number | any;
+    let lat: number | any;
+    if (locale) {
+      [long, lat] = locale;
+    }
+    //  await Hospital.collection.createIndex({ location: "2dsphere" });
+    const locationRecommendation = await Hospital.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [parseFloat(long), parseFloat(lat)],
+          },
+          $maxDistance: 10000, // Maximum distance in meters
+        },
+      },
+    }).limit(3);
+    
+    if (locationRecommendation.length < 3) {
+      const ratingRecommendation = await Hospital.find({}).sort({avgRate: -1}).limit(3).exec()
+
+    res.status(StatusCodes.OK).json({
+      message: "Recommended hospoitals",
+    ratingRecommendation
+    });
+    } else {
+              res.status(StatusCodes.OK).json({
+                message: "Recommended hospoitals",
+             locationRecommendation
+              });
+      
+    }
+  });
 }
