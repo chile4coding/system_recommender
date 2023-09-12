@@ -79,6 +79,11 @@ export class UserRoutes implements UserRouteProps {
       this.authService.auth,
       this.userService.recommendation
     );
+    this.route.get(
+      "/get_user",
+      this.authService.auth,
+      this.userService.getUser
+    );
   }
   public getRoute() {
     return this.route;

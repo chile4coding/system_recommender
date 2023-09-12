@@ -26,7 +26,7 @@ export class UserServices implements UserServiceProps {
       this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
     }
     try {
-       await Hospital.collection.createIndex({ location: "2dsphere" });
+      await Hospital.collection.createIndex({ location: "2dsphere" });
       const { email, password, phone, firstname, lastname } = req.body;
       const findEmail = await User.findOne({ email });
       if (findEmail) {
@@ -69,10 +69,13 @@ export class UserServices implements UserServiceProps {
       if (!findEmail) {
         this.utils.handleError("User not found!", StatusCodes.BAD_REQUEST);
       }
-     const isMatch   =  await this.utils.comparePassword(password, findEmail?.password as string);
-if(!isMatch){
-   this.utils.handleError("Wrong password", StatusCodes.BAD_REQUEST);
-}
+      const isMatch = await this.utils.comparePassword(
+        password,
+        findEmail?.password as string
+      );
+      if (!isMatch) {
+        this.utils.handleError("Wrong password", StatusCodes.BAD_REQUEST);
+      }
       const id = findEmail?.id;
 
       const token = this.utils.JWTToken(findEmail?.email as string, id);
@@ -188,11 +191,24 @@ if(!isMatch){
     }
   );
 
-  public recommendation = expressAsyncHandler(async (req: any, res, next) => {
-    const user = await User.findById(req.authId)
-    
-    const locale = user?.location?.coordinates;
+  public getUser = expressAsyncHandler(async (req: any, res, next) => {
+    try {
+      const user = await User.findById(req.authId);
 
+      if (user) {
+        res.status(StatusCodes.OK).json({
+          user,
+        });
+      }
+    } catch (error) {
+      next(error)
+    }
+  });
+
+  public recommendation = expressAsyncHandler(async (req: any, res, next) => {
+    const user = await User.findById(req.authId);
+
+    const locale = user?.location?.coordinates;
 
     let long: number | any;
     let lat: number | any;
@@ -211,20 +227,22 @@ if(!isMatch){
         },
       },
     }).limit(3);
-    
-    if (locationRecommendation.length < 3) {
-      const ratingRecommendation = await Hospital.find({}).sort({avgRate: -1}).limit(3).exec()
 
-    res.status(StatusCodes.OK).json({
-      message: "Recommended hospoitals",
-    ratingRecommendation
-    });
+    if (locationRecommendation.length < 3) {
+      const ratingRecommendation = await Hospital.find({})
+        .sort({ avgRate: -1 })
+        .limit(3)
+        .exec();
+
+      res.status(StatusCodes.OK).json({
+        message: "Recommended hospoitals",
+        ratingRecommendation,
+      });
     } else {
-              res.status(StatusCodes.OK).json({
-                message: "Recommended hospoitals",
-             locationRecommendation
-              });
-      
+      res.status(StatusCodes.OK).json({
+        message: "Recommended hospoitals",
+        locationRecommendation,
+      });
     }
   });
 }

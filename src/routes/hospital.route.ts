@@ -55,7 +55,7 @@ export class HospitalRoutes implements HospitalRouteProps {
     );
     this.route.get(
       "/get_hospitals",
-    //   this.authService.auth,
+      this.authService.auth,
       this.hospitalService.getHospitals
     );
   }
