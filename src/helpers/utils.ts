@@ -29,8 +29,7 @@ export class Utils {
     
     
       const isMatch = await bcrypt.compare(password, hashedPassword);
-
-      console.log(isMatch)
+      
    
       return isMatch
   };
