@@ -25,15 +25,14 @@ export class Utils {
     );
     return token;
   };
-  comparePassword = async (password: string, hashedPassword: string) => {
-    try {
+ async comparePassword  (password: string, hashedPassword: string) {
+    
+    
       const isMatch = await bcrypt.compare(password, hashedPassword);
-      if (!isMatch) {
-        this.handleError("Invalid password", StatusCodes.BAD_REQUEST);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+
+      console.log(isMatch)
+   
+      return isMatch
   };
 
   uploaduserpicture = async function name(file: string) {

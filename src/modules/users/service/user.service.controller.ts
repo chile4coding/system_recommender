@@ -69,8 +69,10 @@ export class UserServices implements UserServiceProps {
       if (!findEmail) {
         this.utils.handleError("User not found!", StatusCodes.BAD_REQUEST);
       }
-      await this.utils.comparePassword(password, findEmail?.password as string);
-
+     const isMatch   =  await this.utils.comparePassword(password, findEmail?.password as string);
+if(!isMatch){
+   this.utils.handleError("Wrong password", StatusCodes.BAD_REQUEST);
+}
       const id = findEmail?.id;
 
       const token = this.utils.JWTToken(findEmail?.email as string, id);
