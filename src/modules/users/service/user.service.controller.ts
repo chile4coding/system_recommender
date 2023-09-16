@@ -27,7 +27,7 @@ export class UserServices implements UserServiceProps {
     }
     try {
       await Hospital.collection.createIndex({ location: "2dsphere" });
-      const { email, password, phone, firstname, lastname } = req.body;
+      const { email, password, phone, fullname } = req.body;
       const findEmail = await User.findOne({ email });
       if (findEmail) {
         this.utils.handleError(
@@ -35,21 +35,19 @@ export class UserServices implements UserServiceProps {
           StatusCodes.BAD_REQUEST
         );
       }
+      const  username= fullname.split(" ")
       const hashPassword = await this.utils.hashPassword(password);
       const user = await User.create({
-        firstName: firstname,
-        phone: phone,
+        fullName:fullname,
         password: hashPassword,
-        lastName: lastname,
         email: email,
-        displayName: firstname.charAt(0) + " " + lastname.charAt(0),
+        displayName: username.charAt(0) + " " + username.charAt(1),
       });
       const saveUser = await user.save();
 
       res.status(StatusCodes.OK).json({
         message: "user created successfully",
-        firstname: saveUser.firstName,
-        phone: saveUser.phone,
+      fullname: saveUser.fullName,
         email: saveUser.email,
         id: saveUser._id,
       });
@@ -84,8 +82,7 @@ export class UserServices implements UserServiceProps {
         mesage: "Login SUccessful",
         token: token,
         userId: id,
-        firstname: findEmail?.firstName,
-        lastname: findEmail?.lastName,
+        fullname:findEmail?.fullName,
         email: findEmail?.email,
         dpName: findEmail?.displayName,
       });
@@ -118,7 +115,6 @@ export class UserServices implements UserServiceProps {
 
           res.status(StatusCodes.OK).json({
             message: "upload successful",
-            firstname: uploadUserPics?.firstName,
             phone: uploadUserPics?.phone,
             email: uploadUserPics?.email,
             avatar: uploadUserPics?.avatar,
@@ -182,8 +178,7 @@ export class UserServices implements UserServiceProps {
         res.status(StatusCodes.OK).json({
           message: "profile updated successfully",
           phone: updated?.phone,
-          firstname: updated?.firstName,
-          lastname: updated?.lastName,
+         fullname:updated?.fullName
         });
       } catch (error) {
         next(error);
