@@ -46,7 +46,7 @@ export class UserServices implements UserServiceProps {
       const saveUser = await user.save();
 
       res.status(StatusCodes.OK).json({
-        message: "user created successfully",
+        message: "Signup successfully",
       fullname: saveUser.fullName,
         email: saveUser.email,
         id: saveUser._id,
@@ -79,7 +79,7 @@ export class UserServices implements UserServiceProps {
       const token = this.utils.JWTToken(findEmail?.email as string, id);
 
       res.status(StatusCodes.OK).json({
-        mesage: "Login SUccessful",
+        mesage: "Login successful",
         token: token,
         userId: id,
         fullname:findEmail?.fullName,
