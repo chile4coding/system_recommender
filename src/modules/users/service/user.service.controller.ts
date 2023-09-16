@@ -27,7 +27,7 @@ export class UserServices implements UserServiceProps {
     }
     try {
       await Hospital.collection.createIndex({ location: "2dsphere" });
-      const { email, password, phone, fullname } = req.body;
+      const { email, password, fullname } = req.body;
       const findEmail = await User.findOne({ email });
       if (findEmail) {
         this.utils.handleError(
@@ -41,7 +41,7 @@ export class UserServices implements UserServiceProps {
         fullName:fullname,
         password: hashPassword,
         email: email,
-        displayName: username.charAt(0) + " " + username.charAt(1),
+        displayName: username[0].charAt(0) + "" + username[1].charAt(0),
       });
       const saveUser = await user.save();
 
