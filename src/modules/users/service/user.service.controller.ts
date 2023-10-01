@@ -35,10 +35,10 @@ export class UserServices implements UserServiceProps {
           StatusCodes.BAD_REQUEST
         );
       }
-      const  username= fullname.split(" ")
+      const username = fullname.split(" ");
       const hashPassword = await this.utils.hashPassword(password);
       const user = await User.create({
-        fullName:fullname,
+        fullName: fullname,
         password: hashPassword,
         email: email,
         displayName: username[0].charAt(0) + "" + username[1].charAt(0),
@@ -47,7 +47,7 @@ export class UserServices implements UserServiceProps {
 
       res.status(StatusCodes.OK).json({
         message: "Signup successfully",
-      fullname: saveUser.fullName,
+        fullname: saveUser.fullName,
         email: saveUser.email,
         id: saveUser._id,
       });
@@ -82,7 +82,7 @@ export class UserServices implements UserServiceProps {
         mesage: "Login successful",
         token: token,
         userId: id,
-        fullname:findEmail?.fullName,
+        fullname: findEmail?.fullName,
         email: findEmail?.email,
         username: findEmail?.displayName,
       });
@@ -178,7 +178,7 @@ export class UserServices implements UserServiceProps {
         res.status(StatusCodes.OK).json({
           message: "profile updated successfully",
           phone: updated?.phone,
-         fullname:updated?.fullName
+          fullname: updated?.fullName,
         });
       } catch (error) {
         next(error);
@@ -196,7 +196,7 @@ export class UserServices implements UserServiceProps {
         });
       }
     } catch (error) {
-      next(error)
+      next(error);
     }
   });
 
@@ -221,7 +221,7 @@ export class UserServices implements UserServiceProps {
           $maxDistance: 10000, // Maximum distance in meters
         },
       },
-    }).limit(3);
+    });
 
     if (locationRecommendation.length < 3) {
       const ratingRecommendation = await Hospital.find({})
@@ -240,4 +240,45 @@ export class UserServices implements UserServiceProps {
       });
     }
   });
+
+  public recommendationByRating = expressAsyncHandler(async (req, res) => {
+    const ratingRecommendation = await Hospital.find({})
+      .sort({ avgRate: -1 })
+      .limit(3)
+      .exec();
+    if (!ratingRecommendation) {
+    }
+    res.status(StatusCodes.OK).json({
+      message: "Recommended hospoitals",
+      ratingRecommendation,
+    });
+  });
+  public recommendationByLocation = expressAsyncHandler(
+    async (req: any, res) => {
+      const user = await User.findById(req.authId);
+
+      const locale = user?.location?.coordinates;
+
+      let long: number | any;
+      let lat: number | any;
+      if (locale) {
+        [long, lat] = locale;
+      }
+      const locationRecommendation = await Hospital.find({
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [parseFloat(long), parseFloat(lat)],
+            },
+            $maxDistance: 10000, // Maximum distance in meters
+          },
+        },
+      });
+      res.status(StatusCodes.OK).json({
+        message: "Recommended hospoitals",
+        locationRecommendation,
+      });
+    }
+  );
 }

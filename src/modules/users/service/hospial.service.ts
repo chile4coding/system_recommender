@@ -2,11 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import { Utils } from "../../../helpers/utils";
 import { validationResult } from "express-validator";
 import { StatusCodes } from "http-status-codes";
-import {
-  Hospital,
-
-
-} from "../models/hospital.model";
+import { Hospital } from "../models/hospital.model";
 import { User } from "../models/user.model";
 
 interface HospiterServiceProps {
@@ -21,12 +17,15 @@ export class HospitalServices implements HospiterServiceProps {
       this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
     }
     try {
-      const { name, address, phone, long, lat } = req.body;
+      const { name, address, phone, long, lat, city, desc , website} = req.body;
 
       const hospital = await Hospital.create({
         name,
         phone,
         address,
+        city,
+        desc,
+        website,
         location: {
           type: "Point",
           coordinates: [long, lat],
@@ -47,6 +46,8 @@ export class HospitalServices implements HospiterServiceProps {
     if (!error.isEmpty()) {
       this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
     }
+
+
 
     try {
       const { specialist, position, hospitalId } = req.params;
@@ -73,6 +74,45 @@ export class HospitalServices implements HospiterServiceProps {
 
         res.status(StatusCodes.OK).json({
           message: "specialist created",
+          specialist: hospitalUser,
+        });
+      }
+    } catch (error) {}
+  });
+  public createFacility = expressAsyncHandler(async (req, res, next) => {
+    const error = validationResult(req.params);
+    if (!error.isEmpty()) {
+      this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
+    }
+
+
+    try {
+      const { name, hospitalName, hospitalId,} = req.params;
+
+
+
+      if ("file" in req) {
+        if (!req.path) {
+          this.utils.handleError("file is required", StatusCodes.BAD_REQUEST);
+        }
+        const cloudImageUpload = await this.utils.uploaduserpicture(
+          req.file?.path as string
+        );
+    
+        const hospitalUser = await Hospital.findByIdAndUpdate(
+          { _id: hospitalId },
+          {
+            $push: {
+              facilities: {
+             name, hospitalName,
+                avatar: cloudImageUpload.url,
+              },
+            },
+          }
+        );
+
+        res.status(StatusCodes.OK).json({
+          message: "facility created",
           specialist: hospitalUser,
         });
       }
@@ -128,13 +168,14 @@ export class HospitalServices implements HospiterServiceProps {
         .reduce((acc, curr) => acc + curr, 0);
       if (hospitalRating && rateArr) {
         const rateAvg = Math.round(rateArr / hospitalRating.length);
-       
-        const finalRate = await Hospital.findByIdAndUpdate({_id: hospitalId}, {
-          avgRate: rateAvg,
-        });
-        const saveRate  = await finalRate?.save()
 
-     
+        const finalRate = await Hospital.findByIdAndUpdate(
+          { _id: hospitalId },
+          {
+            avgRate: rateAvg,
+          }
+        );
+        const saveRate = await finalRate?.save();
 
         res.status(StatusCodes.OK).json({
           message: "rating successfully ",
@@ -143,6 +184,53 @@ export class HospitalServices implements HospiterServiceProps {
       }
     } catch (error) {}
   });
+
+  // public userFavouriteHospital = expressAsyncHandler(async (req, res, next) => {
+  //   const errors = validationResult(req.body);
+
+  //   if (!errors.isEmpty()) {
+  //     this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
+  //   }
+  //   const { email, hospitalId, favouriteId } = req.body;
+
+  //   const hospital = await Hospital.findById(hospitalId);
+
+  //   let isFavouritePresent;
+  //   try {
+  //     isFavouritePresent = await HospitalFavourite.findOne({
+  //       _id: favouriteId,
+  //       userEmail: email,
+  //       hospitalId: hospital?._id,
+  //     }).exec();
+
+  //     if (isFavouritePresent) {
+  //       isFavouritePresent = await HospitalFavourite.updateOne({
+  //         isFavourite: !isFavouritePresent.isFavourite,
+  //       });
+  //     } else {
+  //       isFavouritePresent = await HospitalFavourite.create({
+  //         userEmail: email,
+  //         hospitalId: hospital?._id,
+  //         isFavourite: true,
+  //       });
+
+  //       const checkHospitalfavourite = await Hospital.findById(hospital?.id);
+
+  //       console.log(checkHospitalfavourite);
+
+  //       // if (checkHospitalfavourite) {
+  //       //          checkHospitalfavourite.hospitalFavouriteId.push(
+  //       //     isFavouritePresent._id
+  //       //   );
+
+  //       // await checkHospitalfavourite.save();
+  //     }
+
+  //     res.status(StatusCodes.OK).json({
+  //       isFavouritePresent,
+  //     });
+  //   } catch (error) {}
+  // });
 
   public uplaodHospitalImage = expressAsyncHandler(async (req, res, next) => {
     try {

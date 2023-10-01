@@ -28,12 +28,20 @@ export class HospitalRoutes implements HospitalRouteProps {
       check("phone").isEmpty(),
       check("lat").isEmpty(),
       check("long").isEmpty(),
+      check("city").isEmpty(),
+      check("desc").isEmpty(),
+      check("website").isEmpty(),
       this.hospitalService.createHospital
     ),
       this.route.post(
         "/create_specialist/:hospitalId/:specialist/:position",
            upload.single("image"),
         this.hospitalService.createSpecialist
+      );
+      this.route.post(
+        "/create_facility/:hospitalId/:name/:hospitalName",
+           upload.single("image"),
+        this.hospitalService.createFacility
       );
     this.route.post(
       "/create_service/:hospitalId",
@@ -58,6 +66,7 @@ export class HospitalRoutes implements HospitalRouteProps {
       this.authService.auth,
       this.hospitalService.getHospitals
     );
+ 
   }
 
   public getRoute() {

@@ -24,5 +24,7 @@ const userSchema = new Schema<IUser>({
   recommendation: [{ type: String }],
 });
 
+
+
 // 3. Create a Model.
 export const User = model<IUser>("User", userSchema);

@@ -79,6 +79,16 @@ export class UserRoutes implements UserRouteProps {
       this.userService.recommendation
     );
     this.route.get(
+      "/recommendation_location",
+      this.authService.auth,
+      this.userService.recommendationByLocation
+    );
+    this.route.get(
+      "/recommendation_rating",
+      this.authService.auth,
+      this.userService.recommendationByRating
+    );
+    this.route.get(
       "/get_user",
       this.authService.auth,
       this.userService.getUser

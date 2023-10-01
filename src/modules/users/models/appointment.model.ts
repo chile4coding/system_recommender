@@ -40,4 +40,7 @@ const appointmentSchema = new Schema<Amodel>(
   }
 );
 
+
+
+
 export const Appointment = model<Amodel>("Appointment", appointmentSchema);
