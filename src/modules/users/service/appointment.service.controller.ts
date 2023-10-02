@@ -27,7 +27,7 @@ export class AppointmentServices implements AppointmentServiceProps {
           purpose,
           user: req.authId,
           date,
-          time
+          time,
         });
         if (!addAppointment) {
           this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
@@ -45,9 +45,9 @@ export class AppointmentServices implements AppointmentServiceProps {
   public getAppointments = expressAsyncHandler(async (req: any, res, next) => {
     try {
       const id = req.authId;
-      console.log(id)
+      console.log(id);
       const userAppointment = await Appointment.find({
-        user: id
+        user: id,
       });
       if (!userAppointment) {
         this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
@@ -83,7 +83,7 @@ export class AppointmentServices implements AppointmentServiceProps {
             this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
           }
           res.status(StatusCodes.OK).json({
-            message: "appointment successfully booked",
+            message: "appointment successfully updated",
             userAppointment,
           });
         }
@@ -92,6 +92,51 @@ export class AppointmentServices implements AppointmentServiceProps {
       }
     }
   );
+  public updateAppointment = expressAsyncHandler(
+    async (req: any, res, next) => {
+      enum Status {
+        upcoming = "upcoming",
+        concluded = "concluded",
+        today = "today",
+        missed = "missed",
+      }
+
+      try {
+        const id = req.authId;
+        const findAppointment = await Appointment.find({
+          user: id,
+        });
+
+        if (findAppointment) {
+          findAppointment.forEach((appoint: any) => {
+            if (appoint.status === Status.concluded) {
+              return appoint;
+            } else if (
+              
+              new Date(appoint.date) === new Date()
+            ) {
+              appoint.status = Status.today;
+            } else if (new Date(appoint.date) < new Date()) {
+             
+              appoint.status = Status.missed;
+            } else if (new Date(appoint.date) > new Date()) {
+              appoint.status = Status.upcoming;
+            }
+
+            return appoint;
+          });
+
+          findAppointment.forEach((appoint: any) => {
+            appoint
+              .save()
+              .then((data: any) => console.log(data))
+              .catch((error: any) => console.log(error));
+          });
+        }
+        res.status(StatusCodes.OK).json(findAppointment);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
 }
-
-

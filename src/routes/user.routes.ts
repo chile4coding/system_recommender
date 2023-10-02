@@ -66,6 +66,11 @@ export class UserRoutes implements UserRouteProps {
       this.authService.auth,
       this.appointmentServices.getAppointments
     );
+    this.route.get(
+      "/appointment_auto_update",
+      this.authService.auth,
+      this.appointmentServices.updateAppointment
+    );
     this.route.patch(
       "/update_appointment_status",
       check("satus").isEmpty(),
