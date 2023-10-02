@@ -244,7 +244,6 @@ export class UserServices implements UserServiceProps {
   public recommendationByRating = expressAsyncHandler(async (req, res) => {
     const ratingRecommendation = await Hospital.find({})
       .sort({ avgRate: -1 })
-      .limit(3)
       .exec();
     if (!ratingRecommendation) {
     }
