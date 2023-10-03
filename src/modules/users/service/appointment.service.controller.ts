@@ -45,7 +45,7 @@ export class AppointmentServices implements AppointmentServiceProps {
   public getAppointments = expressAsyncHandler(async (req: any, res, next) => {
     try {
       const id = req.authId;
-      console.log(id);
+
       const userAppointment = await Appointment.find({
         user: id,
       });
@@ -64,6 +64,7 @@ export class AppointmentServices implements AppointmentServiceProps {
     async (req: any, res, next) => {
       try {
         const id = req.authId;
+
         const { appointmentId, status } = req.body;
         const findAppointment = await Appointment.findById(appointmentId);
         if (findAppointment?.status === "concluded") {
@@ -111,13 +112,9 @@ export class AppointmentServices implements AppointmentServiceProps {
           findAppointment.forEach((appoint: any) => {
             if (appoint.status === Status.concluded) {
               return appoint;
-            } else if (
-              
-              new Date(appoint.date) === new Date()
-            ) {
+            } else if (new Date(appoint.date) === new Date()) {
               appoint.status = Status.today;
             } else if (new Date(appoint.date) < new Date()) {
-             
               appoint.status = Status.missed;
             } else if (new Date(appoint.date) > new Date()) {
               appoint.status = Status.upcoming;
@@ -134,6 +131,149 @@ export class AppointmentServices implements AppointmentServiceProps {
           });
         }
         res.status(StatusCodes.OK).json(findAppointment);
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+  public userAppointmentDashboard = expressAsyncHandler(
+    async (req: any, res, next) => {
+      try {
+        const id = req.authId;
+        const appointments = await Appointment.find({
+          user: id,
+        });
+
+        const Jan = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 0 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const Feb = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 1 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const march = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 2 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const appril = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 3 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const may = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 4 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const jun = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 5 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const jul = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 6 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const aug = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 7 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const sep = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 8 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const oct = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 9 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const nov = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 10 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+        const dec = appointments.filter(
+          (a) =>
+            new Date(a.date).getMonth() === 11 &&
+            new Date(a.date).getFullYear() === new Date().getFullYear()
+        );
+
+        const userData1 = [
+          {
+            id: 1,
+            month: "Jan",
+            appointment: Jan.length,
+          },
+          {
+            id: 2,
+            month: "Feb",
+            appointment: Feb.length,
+          },
+          {
+            id: 3,
+            month: "Mar",
+
+            appointment: march.length,
+          },
+          {
+            id: 4,
+            month: "Apr",
+
+            appointment: appril.length,
+          },
+          {
+            id: 5,
+            month: "May",
+
+            appointment: may.length,
+          },
+          {
+            id: 6,
+            month: "Jun",
+
+            appointment: jun.length,
+          },
+          {
+            id: 7,
+            month: "Jul",
+            appointment: jul.length,
+          },
+          {
+            id: 8,
+            month: "Aug",
+            appointment: aug.length,
+          },
+          {
+            id: 9,
+            month: "Sep",
+            appointment: sep.length,
+          },
+          {
+            id: 10,
+            month: "Oct",
+            appointment: oct.length,
+          },
+          {
+            id: 6,
+            month: "Nov",
+            appointment: nov.length,
+          },
+          {
+            id: 6,
+            month: "Dec",
+            appointment: dec.length,
+          },
+        ];
+
+        res.status(StatusCodes.OK).json(userData1);
       } catch (error) {
         next(error);
       }

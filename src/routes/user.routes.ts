@@ -67,6 +67,11 @@ export class UserRoutes implements UserRouteProps {
       this.appointmentServices.getAppointments
     );
     this.route.get(
+      "/get_userAppointment_dashboard",
+      this.authService.auth,
+      this.appointmentServices.userAppointmentDashboard
+    );
+    this.route.get(
       "/appointment_auto_update",
       this.authService.auth,
       this.appointmentServices.updateAppointment
