@@ -59,6 +59,10 @@ export class HospitalServices implements HospiterServiceProps {
         const cloudImageUpload = await this.utils.uploaduserpicture(
           req.file?.path as string
         );
+
+        
+      
+
         const hospitalUser = await Hospital.findByIdAndUpdate(
           { _id: hospitalId },
           {
@@ -185,52 +189,7 @@ export class HospitalServices implements HospiterServiceProps {
     } catch (error) {}
   });
 
-  // public userFavouriteHospital = expressAsyncHandler(async (req, res, next) => {
-  //   const errors = validationResult(req.body);
-
-  //   if (!errors.isEmpty()) {
-  //     this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
-  //   }
-  //   const { email, hospitalId, favouriteId } = req.body;
-
-  //   const hospital = await Hospital.findById(hospitalId);
-
-  //   let isFavouritePresent;
-  //   try {
-  //     isFavouritePresent = await HospitalFavourite.findOne({
-  //       _id: favouriteId,
-  //       userEmail: email,
-  //       hospitalId: hospital?._id,
-  //     }).exec();
-
-  //     if (isFavouritePresent) {
-  //       isFavouritePresent = await HospitalFavourite.updateOne({
-  //         isFavourite: !isFavouritePresent.isFavourite,
-  //       });
-  //     } else {
-  //       isFavouritePresent = await HospitalFavourite.create({
-  //         userEmail: email,
-  //         hospitalId: hospital?._id,
-  //         isFavourite: true,
-  //       });
-
-  //       const checkHospitalfavourite = await Hospital.findById(hospital?.id);
-
-  //       console.log(checkHospitalfavourite);
-
-  //       // if (checkHospitalfavourite) {
-  //       //          checkHospitalfavourite.hospitalFavouriteId.push(
-  //       //     isFavouritePresent._id
-  //       //   );
-
-  //       // await checkHospitalfavourite.save();
-  //     }
-
-  //     res.status(StatusCodes.OK).json({
-  //       isFavouritePresent,
-  //     });
-  //   } catch (error) {}
-  // });
+  
 
   public uplaodHospitalImage = expressAsyncHandler(async (req, res, next) => {
     try {
