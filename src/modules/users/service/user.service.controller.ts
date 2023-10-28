@@ -96,28 +96,25 @@ export class UserServices implements UserServiceProps {
       try {
         // const imagePath = req.file?.path.replace("\\", "/");
 
-        const update  =  req.body.image
+        const update = req.body.image;
         const { authId } = req;
-        console.log(" ============= auth id ", authId)
+
         const findUser = await User.findById(authId);
-      
 
         if (!findUser) {
           this.utils.handleError("Inval request", StatusCodes.BAD_REQUEST);
         }
-          const uploadUserPics = await User.findByIdAndUpdate(authId, {
-            avatar: update as string
-          });
+        const uploadUserPics = await User.findByIdAndUpdate(authId, {
+          avatar: update as string,
+        });
 
-
-          res.status(StatusCodes.OK).json({
-            message: "upload successful",
-            phone: uploadUserPics?.phone,
-            email: uploadUserPics?.email,
-            avatar: uploadUserPics?.avatar,
-            id: uploadUserPics?._id,
-          });
-        
+        res.status(StatusCodes.OK).json({
+          message: "upload successful",
+          phone: uploadUserPics?.phone,
+          email: uploadUserPics?.email,
+          avatar: uploadUserPics?.avatar,
+          id: uploadUserPics?._id,
+        });
       } catch (error) {
         next(error);
       }
@@ -155,16 +152,40 @@ export class UserServices implements UserServiceProps {
   );
   public updateUserProfile = expressAsyncHandler(
     async (req: any, res, next) => {
+      
       try {
         const { firstname, lastname, phone, gender, status, displayName } =
           req.body;
 
         const updateUser = await User.findByIdAndUpdate(req.authId, {
           fullName: `${firstname} ${lastname}`,
-          phone: phone,
           gender: gender,
           status: status,
           displayName: displayName,
+        });
+        const updated = await updateUser?.save();
+
+        if (!updated) {
+          this.utils.handleError("Server Error", StatusCodes.BAD_REQUEST);
+        }
+        res.status(StatusCodes.OK).json({
+          message: "profile updated successfully",
+          phone: updated?.phone,
+          fullname: updated?.fullName,
+        });
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+  public updateUserCompleteProfile = expressAsyncHandler(
+    async (req: any, res, next) => {
+      try {
+        const { email, phone } = req.body;
+
+        const updateUser = await User.findByIdAndUpdate(req.authId, {
+          phone: phone,
+          email: email,
         });
         const updated = await updateUser?.save();
 

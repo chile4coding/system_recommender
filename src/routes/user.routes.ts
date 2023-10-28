@@ -42,6 +42,11 @@ export class UserRoutes implements UserRouteProps {
       this.authService.auth,
       this.userService.updateUserProfile
     );
+    this.route.post(
+      "/update_user_complete",
+      this.authService.auth,
+      this.userService.updateUserCompleteProfile
+    );
 
     this.route.post(
       "/upload",
