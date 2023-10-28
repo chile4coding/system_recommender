@@ -45,7 +45,6 @@ export class UserRoutes implements UserRouteProps {
 
     this.route.post(
       "/upload",
-      this.authService.auth,
       this.userService.uploadProfilePicture
     );
     this.route.post(
