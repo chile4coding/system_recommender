@@ -15,13 +15,17 @@ utils = new Utils();
 auth = (req: Request | any, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.get("Authorization");
+
+    console.log("Show header========== ", authHeader)
     if (!authHeader) {
       this.utils.handleError("No token provided", StatusCodes.UNAUTHORIZED);
     }
     let decode: any;
     const token = authHeader?.split(" ")[1];
+    console.log("Show token========== ", token)
     decode = Jwt.verify(token as string, `${process.env.JWT_SECRET_KEY}`);
-
+    console.log("show decoded========== ", decode)
+    
     if (!token || !decode) {
       this.utils.handleError("Invalid token", StatusCodes.UNAUTHORIZED);
     }
