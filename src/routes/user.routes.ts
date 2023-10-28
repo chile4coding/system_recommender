@@ -9,14 +9,14 @@ const upload = multer({ dest: "uploads/" });
 
 interface UserRouteProps {
   userService: UserServices;
-  authService: Auth
-  appointmentServices: AppointmentServices
+  authService: Auth;
+  appointmentServices: AppointmentServices;
 }
 export class UserRoutes implements UserRouteProps {
   private route: Router;
   userService = new UserServices();
   authService = new Auth();
-  appointmentServices = new AppointmentServices()
+  appointmentServices = new AppointmentServices();
 
   constructor() {
     this.route = Router();
@@ -39,13 +39,13 @@ export class UserRoutes implements UserRouteProps {
     );
     this.route.post(
       "/update_user",
-      this.authService.auth,    
+      this.authService.auth,
       this.userService.updateUserProfile
     );
 
     this.route.post(
       "/upload",
-      upload.single("image"),
+      this.authService.auth,
       this.userService.uploadProfilePicture
     );
     this.route.post(

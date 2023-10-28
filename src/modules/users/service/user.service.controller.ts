@@ -95,22 +95,14 @@ export class UserServices implements UserServiceProps {
     async (req: any, res: any, next) => {
       try {
         // const imagePath = req.file?.path.replace("\\", "/");
+
+        const update  =  req.body.image
         const { authId } = req;
         const findUser = await User.findById(authId);
 
         if (!findUser) {
           this.utils.handleError("Inval request", StatusCodes.BAD_REQUEST);
         }
-
-        if ("file" in req) {
-          if (!req.path) {
-            this.utils.handleError("file is required", StatusCodes.BAD_REQUEST);
-          }
-          const cloudImageUpload = await this.utils.uploaduserpicture(
-            req.file?.path as string
-          );
-
-          const update = { avatar: cloudImageUpload.url };
           const uploadUserPics = await User.findByIdAndUpdate(authId, update);
 
           res.status(StatusCodes.OK).json({
@@ -120,7 +112,7 @@ export class UserServices implements UserServiceProps {
             avatar: uploadUserPics?.avatar,
             id: uploadUserPics?._id,
           });
-        }
+        
       } catch (error) {
         next(error);
       }
