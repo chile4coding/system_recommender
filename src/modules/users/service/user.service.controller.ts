@@ -103,7 +103,9 @@ export class UserServices implements UserServiceProps {
         if (!findUser) {
           this.utils.handleError("Inval request", StatusCodes.BAD_REQUEST);
         }
-          const uploadUserPics = await User.findByIdAndUpdate(authId, update);
+          const uploadUserPics = await User.findByIdAndUpdate({_id: authId}, {
+            avatar: update
+          });
 
           res.status(StatusCodes.OK).json({
             message: "upload successful",
