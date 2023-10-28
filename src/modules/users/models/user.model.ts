@@ -7,17 +7,21 @@ interface IUser {
   password: string;
   phone: string;
   fullName: string;
+  gender:string;
+  status:string;
   avatar: string;
   location: { type:{}, coordinates:Number[] };
   recommendation: string[];
 }
 
-// user schema
+// user schma
 const userSchema = new Schema<IUser>({
   displayName: { type: String },
   email: { type: String, required: true },
   password: { type: String, required: true },
   phone: String,
+  gender:String,
+  status:String,
   fullName: { type: String, required: true },
   avatar: String,
   location: { type:{type:String, },coordinates:[Number]},

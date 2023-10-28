@@ -158,17 +158,16 @@ export class UserServices implements UserServiceProps {
   );
   public updateUserProfile = expressAsyncHandler(
     async (req: any, res, next) => {
-      const error = validationResult(req.body);
-      if (!error.isEmpty()) {
-        this.utils.handleError("Invalide request", StatusCodes.BAD_REQUEST);
-      }
       try {
-        const { firstname, lastname, phone } = req.body;
+        const { firstname, lastname, phone, gender, status, displayName } =
+          req.body;
 
         const updateUser = await User.findByIdAndUpdate(req.authId, {
-          firstName: firstname,
-          lastName: lastname,
+          fullName: `${firstname} ${lastname}`,
           phone: phone,
+          gender: gender,
+          status: status,
+          displayName: displayName,
         });
         const updated = await updateUser?.save();
 

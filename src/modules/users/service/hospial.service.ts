@@ -24,7 +24,7 @@ export class HospitalServices implements HospiterServiceProps {
         phone,
         address,
         city,
-        desc,
+        description:desc,
         website,
         location: {
           type: "Point",

@@ -37,10 +37,14 @@ export class UserRoutes implements UserRouteProps {
       check("password").isEmpty(),
       this.userService.loginUser
     );
+    this.route.post(
+      "/update_user",
+      this.authService.auth,    
+      this.userService.updateUserProfile
+    );
 
     this.route.post(
       "/upload",
-      this.authService.auth,
       upload.single("image"),
       this.userService.uploadProfilePicture
     );
