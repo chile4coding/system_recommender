@@ -99,13 +99,16 @@ export class UserServices implements UserServiceProps {
         const update  =  req.body.image
         const { authId } = req;
         const findUser = await User.findById(authId);
+        console.log(" ========== user" , findUser)
 
         if (!findUser) {
           this.utils.handleError("Inval request", StatusCodes.BAD_REQUEST);
         }
-          const uploadUserPics = await User.findByIdAndUpdate({_id: authId}, {
-            avatar: update
+          const uploadUserPics = await User.findByIdAndUpdate(authId, {
+            avatar: update as string
           });
+
+          console.log("============= uploadUserPics", uploadUserPics)
 
           res.status(StatusCodes.OK).json({
             message: "upload successful",
