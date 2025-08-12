@@ -7,7 +7,6 @@ import v1Api from "./routes/route";
 // import cloudinary from "cloudinary"
 import { v2 as cloudinary } from "cloudinary";
 
-import { error } from "console";
 import { Request, Response, NextFunction } from "express";
 
 dotenv.config();
@@ -21,9 +20,13 @@ cloudinary.config({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors({ credentials: true, 
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  origin: "*" }));
+app.use(
+  cors({
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    origin: "*",
+  })
+);
 
 app.use(v1Api);
 
